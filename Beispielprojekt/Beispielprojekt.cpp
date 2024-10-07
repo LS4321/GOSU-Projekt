@@ -9,7 +9,7 @@
 
 using namespace std;
 
-/* Hiermit koennen spaeter evtl. Buttons eleganter geloest werden */
+/* Hiermit koennen Buttons eleganter geloest werden */
 class Button
 {
 public:
@@ -201,6 +201,8 @@ public:
 	{
 		//Buttons
 		Button reset(Restart, 220, 320, 49, 20, x_Mouse, y_Mouse);
+		Button Screbrd(ScoreboardButton, 216, 350, 58, 20, x_Mouse, y_Mouse);
+		Button schliessen(Close,490,0,20,20,x_Mouse,y_Mouse);
 
 		if(startscreen)
 		{
@@ -283,13 +285,13 @@ public:
 			}
 
 			//Scoreboard oeffnen
-			if (x_Mouse >= 216 && x_Mouse <= 274 && y_Mouse >= 350 && y_Mouse <= 370 && Gosu::Input::down(Gosu::MS_LEFT) && gameOver)
+			if (Screbrd.bttn_clicked() && gameOver)
 			{
 				scb = true;
 			}
 
 			//Scoreboard schliessen
-			if (x_Mouse >= 490 && x_Mouse <= 510 && y_Mouse >= 0 && y_Mouse <= 20 && Gosu::Input::down(Gosu::MS_LEFT) && gameOver)
+			if (schliessen.bttn_clicked() && gameOver)
 			{
 				scb = false;
 			}
