@@ -9,10 +9,9 @@
 
 using namespace std;
 
-/* Hiermit koennen Buttons eleganter geloest werden */
+// Hiermit koennen Buttons eleganter geloest werden 
 class Button
 {
-public:
 	Gosu::Image button_image;
 	int16_t Pos_x;
 	int16_t Pos_y;
@@ -20,7 +19,10 @@ public:
 	int16_t pxl_y;
 	double xM;
 	double yM;
+
+public:
 	Button(Gosu::Image i, int16_t x, int16_t y, int16_t px, int16_t py, double xm, double ym) :button_image(i), Pos_x(x), Pos_y(y), pxl_x(px), pxl_y(py), xM(xm), yM(ym) {}
+	
 	bool bttn_clicked()
 	{
 		if (xM >= Pos_x && xM <= Pos_x + pxl_x && yM >= Pos_y && yM <= Pos_y + pxl_y && Gosu::Input::down(Gosu::MS_LEFT))
@@ -29,6 +31,34 @@ public:
 		}
 		return false;
 	}
+};
+
+class Spielfigur 
+{
+	Gosu::Image player_image;
+	double P_y;
+
+public: 
+	
+	double P_x;
+	bool links;
+	bool rechts;
+
+	Spielfigur(Gosu::Image i,double y):player_image(i),P_y(y){}
+
+	void update()
+	{
+		//Rechts-Links-Bewegung Spielfigur
+		if (links && P_x >= 5)
+		{
+			P_x = P_x - 4;
+		}
+		if (rechts && P_x <= 485)
+		{
+			P_x = P_x + 4;
+		}
+	}
+	
 };
 
 class GameWindow : public Gosu::Window
@@ -57,13 +87,14 @@ class GameWindow : public Gosu::Window
 
 public:
 	//Doubles fuer Positionen
-	double x_Rakete = 255;
 	double y_Laser = 410;
 	double y_Target = -10;
 	double x_Target = rand() % 509;
 	double x_Mouse;
 	double y_Mouse;
 	double x_Laser;
+	double x_Raumschiff = 255;		//x_pos Raumschiff mit Startwert
+	const double y_Raumschiff = 400;
 
 	//Bools v.a. fuer Anzeigen und Schuss
 	bool Hit = false;
@@ -81,6 +112,9 @@ public:
 	bool player4 = false;
 	bool player5 = false;
 	bool player6 = false;
+	bool links;
+	bool rechts;
+
 
 	//Ganzzahlen fuer Zaehler und Score
 	uint16_t Score = 0;
@@ -120,7 +154,9 @@ public:
 	// dann werden `draw` Aufrufe ausgelassen und die Framerate sinkt
 	void draw() override
 	{
+		//Font erstellen fuer alle Verwendungen von Schrift
 		Gosu::Font font(19);
+
 		if (startscreen)
 		{
 			background.draw(0, 0);
@@ -134,10 +170,10 @@ public:
 		}
 		if (!startscreen)
 		{
-			if (!shoot) { x_Laser = x_Rakete + 9; }
+			if (!shoot) { x_Laser = x_Raumschiff + 9; }
 			background.draw(0, 0);
 			laserbeam.draw(x_Laser, y_Laser);
-			Rakete.draw(x_Rakete, 400);
+			Rakete.draw(x_Raumschiff, y_Raumschiff);
 			target.draw(x_Target, y_Target);
 
 
@@ -204,6 +240,16 @@ public:
 		Button Screbrd(ScoreboardButton, 216, 350, 58, 20, x_Mouse, y_Mouse);
 		Button schliessen(Close,490,0,20,20,x_Mouse,y_Mouse);
 
+		//Spielfigur erstellen
+		Spielfigur s1(Rakete, y_Raumschiff);
+		s1.P_x = x_Raumschiff;
+		links = input().down(Gosu::KB_LEFT) && s1.P_x >= 5;
+		rechts = input().down(Gosu::KB_RIGHT) && s1.P_x <= 485;
+		s1.links = links;
+		s1.rechts = rechts;
+		s1.update();
+		x_Raumschiff = s1.P_x;
+
 		if(startscreen)
 		{
 			//Hitboxen fuer P1-,P2-,... Tasten & in Abhaengigkeit richtige bools setzen
@@ -212,17 +258,6 @@ public:
 		{
 			x_Mouse = input().mouse_x();
 			y_Mouse = input().mouse_y();
-
-			//Rechts-Links-Bewegung Spielfigur
-			if (input().down(Gosu::KB_LEFT) && x_Rakete >= 5)
-			{
-				x_Rakete = x_Rakete - 4;
-			}
-			if (input().down(Gosu::KB_RIGHT) && x_Rakete <= 485)
-			{
-				x_Rakete = x_Rakete + 4;
-			}
-
 
 			//Zufällig fallendes Target
 			//Dropgeschwindigkeit von Score abhängig 
