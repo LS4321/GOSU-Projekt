@@ -41,9 +41,9 @@ class Spielfigur
 
 public: 
 	
-	double P_x;
-	bool links;
-	bool rechts;
+	double P_x=255;
+	bool links=false;
+	bool rechts=false;
 
 	Spielfigur(Gosu::Image i,double y):player_image(i),P_y(y){}
 
