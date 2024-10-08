@@ -9,7 +9,7 @@
 
 using namespace std;
 
-// Hiermit koennen Buttons eleganter geloest werden 
+// Klasse für alle Knoepfe im Spiel
 class Button
 {
 	Gosu::Image button_image;
@@ -33,6 +33,7 @@ public:
 	}
 };
 
+// Klasse für die Spielfigur
 class Spielfigur 
 {
 	Gosu::Image player_image;
@@ -63,6 +64,7 @@ public:
 
 class GameWindow : public Gosu::Window
 {
+	//Alle Image-Dateien
 	Gosu::Image background;
 	Gosu::Image Rakete;
 	Gosu::Image laserbeam;
@@ -353,7 +355,8 @@ int main()
 /*
 To-Do
 	1) Screen bei oeffnen des Spiels zum auswaehlen von einem der 6 "Player" (erledigt) -> Auswahl speichern
-	2) Fuer jeden Spieler extra .txt und in die jeweilige je nach vorheiger Wahl den Highscore speichern (System Highsore bleibt extra erhalten
+	2) Fuer jeden Spieler extra .txt und in die jeweilige je nach vorheiger Wahl den Highscore speichern (System Highscore bleibt zusaetzlich erhalten)
 	3) Scores aus allen .txts auslesen und bei Aufruf in Scoreboard anzeigen
-	4) evtl. Audiofeedback bei Treffer
+	4) 255 in Spielfigur Klasse setzen anstatt in GameWindow
+	5) evtl. Audiofeedback bei Treffer
 */
