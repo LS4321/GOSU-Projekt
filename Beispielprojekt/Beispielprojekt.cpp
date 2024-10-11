@@ -9,6 +9,41 @@
 
 using namespace std;
 
+void einlesen(vector <uint16_t>r, string s)
+{
+	ifstream f(s);
+	char trs;
+	f >> r.at(0);
+	f >> trs;
+	f >> r.at(1);
+	f >> trs;
+	f >> r.at(2);
+	f >> trs;
+	f >> r.at(3);
+	f >> trs;
+	f >> r.at(4);
+	f >> trs;
+	f >> r.at(5);
+	f.close();
+}
+
+void ausgeben(vector <uint16_t>l, string s)
+{
+	ofstream f(s);
+	f << l.at(0);
+	f << " ";
+	f << l.at(1);
+	f << " ";
+	f << l.at(2);
+	f << " ";
+	f << l.at(3);
+	f << " ";
+	f << l.at(4);
+	f << " ";
+	f << l.at(5);
+	f.close();
+}
+
 // Klasse für alle Knoepfe im Spiel
 class Button
 {
@@ -22,7 +57,6 @@ class Button
 
 public:
 	Button(Gosu::Image i, int16_t x, int16_t y, int16_t px, int16_t py, double xm, double ym) :button_image(i), Pos_x(x), Pos_y(y), pxl_x(px), pxl_y(py), xM(xm), yM(ym) {}
-	
 	bool bttn_clicked()
 	{
 		if (xM >= Pos_x && xM <= Pos_x + pxl_x && yM >= Pos_y && yM <= Pos_y + pxl_y && Gosu::Input::down(Gosu::MS_LEFT))
@@ -34,18 +68,18 @@ public:
 };
 
 // Klasse für die Spielfigur
-class Spielfigur 
+class Spielfigur
 {
 	Gosu::Image player_image;
 	double P_y;
 
-public: 
-	
-	double P_x=255;
-	bool links=false;
-	bool rechts=false;
+public:
 
-	Spielfigur(Gosu::Image i,double y):player_image(i),P_y(y){}
+	double P_x = 255;
+	bool links = false;
+	bool rechts = false;
+
+	Spielfigur(Gosu::Image i, double y) :player_image(i), P_y(y) {}
 
 	void update()
 	{
@@ -59,8 +93,10 @@ public:
 			P_x = P_x + 4;
 		}
 	}
-	
+
 };
+
+
 
 class GameWindow : public Gosu::Window
 {
@@ -87,6 +123,8 @@ class GameWindow : public Gosu::Window
 	Gosu::Image p5_button;
 	Gosu::Image p6_button;
 
+	vector <uint16_t> scoreboard{ 0,0,0,0,0,0 };  //ueber eine Datei mit lesen und schreiben ueber Vector
+
 public:
 	//Doubles fuer Positionen
 	double y_Laser = 410;
@@ -107,7 +145,7 @@ public:
 	bool show3 = true;
 	bool reset2 = false;
 	bool scb = false;
-	bool startscreen = false; //////true
+	bool startscreen = true;
 	bool player1 = false;
 	bool player2 = false;
 	bool player3 = false;
@@ -121,12 +159,10 @@ public:
 	//Ganzzahlen fuer Zaehler und Score
 	uint16_t Score = 0;
 	uint16_t gOcount = 0;
-
-	vector <uint16_t> scoreboard;  //evtl. ueber eine Datei mit lesen und schreiben ueber Vector
+	uint16_t Spielerauswahl = 0;
 
 	string numberText;
 	string highscoreGlobalText;
-
 
 	GameWindow()
 		: Window(510, 510)
@@ -151,6 +187,7 @@ public:
 		set_caption("Space Invader");
 	}
 
+
 	// Wird bis zu 60x pro Sekunde aufgerufen.
 	// Wenn die Grafikkarte oder der Prozessor nicht mehr hinterherkommen,
 	// dann werden `draw` Aufrufe ausgelassen und die Framerate sinkt
@@ -169,6 +206,7 @@ public:
 			p4_button.draw(107, 250, 2);
 			p5_button.draw(107, 300, 2);
 			p6_button.draw(107, 350, 2);
+			einlesen(scoreboard, "Scoreboard.txt");
 		}
 		if (!startscreen)
 		{
@@ -194,6 +232,7 @@ public:
 			if (gameOver)
 			{
 				show3 = true; show2 = true; show1 = true; gOcount = 0;
+
 				//Highscore Aufzeichnung
 				ifstream a("highscore.txt");
 				int32_t highscore;
@@ -209,6 +248,16 @@ public:
 				c >> highscore;
 				highscoreGlobalText = to_string(highscore);
 				c.close();
+
+				//Spielerspezifischer Highscore 
+
+				//einlesen(scoreboard, "Scoreboard.txt");
+				if (Score > scoreboard.at(Spielerauswahl))
+				{
+					scoreboard.at(Spielerauswahl) = Score;
+					ausgeben(scoreboard, "Scoreboard.txt");
+				}
+				//Array in eine Datei streamen...........................................................
 
 				GameOver.draw(0, 0);
 				font.draw_text("Game Over", 200, 250, 0, 1.0, 1.0, Gosu::Color::GRAY);
@@ -237,10 +286,19 @@ public:
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
+		x_Mouse = input().mouse_x();
+		y_Mouse = input().mouse_y();
+
 		//Buttons
 		Button reset(Restart, 220, 320, 49, 20, x_Mouse, y_Mouse);
 		Button Screbrd(ScoreboardButton, 216, 350, 58, 20, x_Mouse, y_Mouse);
-		Button schliessen(Close,490,0,20,20,x_Mouse,y_Mouse);
+		Button schliessen(Close, 490, 0, 20, 20, x_Mouse, y_Mouse);
+		Button P1(p1_button, 107, 100, 58, 20, x_Mouse, y_Mouse);
+		Button P2(p2_button, 107, 150, 58, 20, x_Mouse, y_Mouse);
+		Button P3(p3_button, 107, 200, 58, 20, x_Mouse, y_Mouse);
+		Button P4(p4_button, 107, 250, 58, 20, x_Mouse, y_Mouse);
+		Button P5(p5_button, 107, 300, 58, 20, x_Mouse, y_Mouse);
+		Button P6(p6_button, 107, 350, 58, 20, x_Mouse, y_Mouse);
 
 		//Spielfigur erstellen
 		Spielfigur s1(Rakete, y_Raumschiff);
@@ -252,15 +310,49 @@ public:
 		s1.update();
 		x_Raumschiff = s1.P_x;
 
-		if(startscreen)
+		if (startscreen)
 		{
-			//Hitboxen fuer P1-,P2-,... Tasten & in Abhaengigkeit richtige bools setzen
+			//Spielstand waehlen
+			if (P1.bttn_clicked())
+			{
+				player1 = true;
+				startscreen = false;
+				Spielerauswahl = 0;				//0 basiert für zugriff auf vector
+			}
+			else if (P2.bttn_clicked())
+			{
+				player2 = true;
+				startscreen = false;
+				Spielerauswahl = 1;
+			}
+			else if (P3.bttn_clicked())
+			{
+				player3 = true;
+				startscreen = false;
+				Spielerauswahl = 2;
+			}
+			else if (P4.bttn_clicked())
+			{
+				player4 = true;
+				startscreen = false;
+				Spielerauswahl = 3;
+			}
+			else if (P5.bttn_clicked())
+			{
+				player5 = true;
+				startscreen = false;
+				Spielerauswahl = 4;
+			}
+			else if (P6.bttn_clicked())
+			{
+				player6 = true;
+				startscreen = false;
+				Spielerauswahl = 5;
+			}
 		}
+
 		if (!startscreen)
 		{
-			x_Mouse = input().mouse_x();
-			y_Mouse = input().mouse_y();
-
 			//Zufällig fallendes Target
 			//Dropgeschwindigkeit von Score abhängig 
 			if (y_Target <= 510)
@@ -351,12 +443,10 @@ int main()
 	window.show();
 }
 
-
 /*
 To-Do
-	1) Screen bei oeffnen des Spiels zum auswaehlen von einem der 6 "Player" (erledigt) -> Auswahl speichern
+	1) Screen bei oeffnen des Spiels zum auswaehlen von einem der 6 "Player"  -> Auswahl speichern (erledigt)
 	2) Fuer jeden Spieler extra .txt und in die jeweilige je nach vorheiger Wahl den Highscore speichern (System Highscore bleibt zusaetzlich erhalten)
 	3) Scores aus allen .txts auslesen und bei Aufruf in Scoreboard anzeigen
-	4) 255 in Spielfigur Klasse setzen anstatt in GameWindow
-	5) evtl. Audiofeedback bei Treffer
+	4) evtl. Audiofeedback bei Treffer
 */
