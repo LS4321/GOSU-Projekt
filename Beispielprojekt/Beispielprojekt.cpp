@@ -47,6 +47,8 @@ void ausgeben(vector <uint16_t>l, string s)
 // Klasse für alle Knoepfe im Spiel
 class Button
 {
+
+public:
 	Gosu::Image button_image;
 	int16_t Pos_x;
 	int16_t Pos_y;
@@ -55,8 +57,8 @@ class Button
 	double xM;
 	double yM;
 
-public:
-	Button(Gosu::Image i, int16_t x, int16_t y, int16_t px, int16_t py, double xm, double ym) :button_image(i), Pos_x(x), Pos_y(y), pxl_x(px), pxl_y(py), xM(xm), yM(ym) {}
+	Button(){}
+
 	bool bttn_clicked()
 	{
 		if (xM >= Pos_x && xM <= Pos_x + pxl_x && yM >= Pos_y && yM <= Pos_y + pxl_y && Gosu::Input::down(Gosu::MS_LEFT))
@@ -125,6 +127,16 @@ class GameWindow : public Gosu::Window
 
 	vector <uint16_t> scoreboard{ 0,0,0,0,0,0 };  //ueber eine Datei mit lesen und schreiben ueber Vector
 
+	Button P1;
+	Button P2;
+	Button P3;
+	Button P4;
+	Button P5;
+	Button P6;
+	Button reset;
+	Button Screbrd;
+	Button schliessen;
+
 public:
 	//Doubles fuer Positionen
 	double y_Laser = 410;
@@ -154,6 +166,7 @@ public:
 	bool player6 = false;
 	bool links;
 	bool rechts;
+	Spielfigur* Playermodel;
 
 
 	//Ganzzahlen fuer Zaehler und Score
@@ -286,32 +299,79 @@ public:
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
+		//Mauszeigerposition 
 		x_Mouse = input().mouse_x();
 		y_Mouse = input().mouse_y();
 
-		//Buttons
-		Button reset(Restart, 220, 320, 49, 20, x_Mouse, y_Mouse);
-		Button Screbrd(ScoreboardButton, 216, 350, 58, 20, x_Mouse, y_Mouse);
-		Button schliessen(Close, 490, 0, 20, 20, x_Mouse, y_Mouse);
-		Button P1(p1_button, 107, 100, 58, 20, x_Mouse, y_Mouse);
-		Button P2(p2_button, 107, 150, 58, 20, x_Mouse, y_Mouse);
-		Button P3(p3_button, 107, 200, 58, 20, x_Mouse, y_Mouse);
-		Button P4(p4_button, 107, 250, 58, 20, x_Mouse, y_Mouse);
-		Button P5(p5_button, 107, 300, 58, 20, x_Mouse, y_Mouse);
-		Button P6(p6_button, 107, 350, 58, 20, x_Mouse, y_Mouse);
-
-		//Spielfigur erstellen
-		Spielfigur s1(Rakete, y_Raumschiff);
-		s1.P_x = x_Raumschiff;
-		links = input().down(Gosu::KB_LEFT) && s1.P_x >= 5;
-		rechts = input().down(Gosu::KB_RIGHT) && s1.P_x <= 485;
-		s1.links = links;
-		s1.rechts = rechts;
-		s1.update();
-		x_Raumschiff = s1.P_x;
-
-		if (startscreen)
+		if (startscreen)	//Startscreen fuer Auswahlen und Presets z.B. Positionen der Tasten
 		{
+			reset.Pos_x = 220;
+			reset.Pos_y = 320;
+			reset.pxl_x = 49;
+			reset.pxl_y = 20;
+			reset.xM = x_Mouse;
+			reset.yM = y_Mouse;
+
+			Screbrd.Pos_x = 216;
+			Screbrd.Pos_y = 350;
+			Screbrd.pxl_x = 58;
+			Screbrd.pxl_y = 20;
+			Screbrd.xM = x_Mouse;
+			Screbrd.yM = y_Mouse;
+
+			schliessen.Pos_x = 490;
+			schliessen.Pos_y = 0;
+			schliessen.pxl_x = 20;
+			schliessen.pxl_y = 20;
+			schliessen.xM = x_Mouse;
+			schliessen.yM = y_Mouse;
+
+			P1.Pos_x = 107;
+			P1.Pos_y = 100;
+			P1.pxl_x = 58;
+			P1.pxl_y = 20;
+			P1.xM = x_Mouse;
+			P1.yM = y_Mouse;
+
+			P2.Pos_x = 107;
+			P2.Pos_y = 150;
+			P2.pxl_x = 58;
+			P2.pxl_y = 20;
+			P2.xM = x_Mouse;
+			P2.yM = y_Mouse;
+
+			P3.Pos_x = 107;
+			P3.Pos_y = 200;
+			P3.pxl_x = 58;
+			P3.pxl_y = 20;
+			P3.xM = x_Mouse;
+			P3.yM = y_Mouse;
+
+			P4.Pos_x = 107;
+			P4.Pos_y = 250;
+			P4.pxl_x = 58;
+			P4.pxl_y = 20;
+			P4.xM = x_Mouse;
+			P4.yM = y_Mouse;
+
+			P5.Pos_x = 107;
+			P5.Pos_y = 300;
+			P5.pxl_x = 58;
+			P5.pxl_y = 20;
+			P5.xM = x_Mouse;
+			P5.yM = y_Mouse;
+
+			P6.Pos_x = 107;
+			P6.Pos_y = 350;
+			P6.pxl_x = 58;
+			P6.pxl_y = 20;
+			P6.xM = x_Mouse;
+			P6.yM = y_Mouse;
+
+			//Spielfigur erstellen
+			Spielfigur s1(Rakete, y_Raumschiff);
+			Playermodel = &s1;
+
 			//Spielstand waehlen
 			if (P1.bttn_clicked())
 			{
@@ -351,8 +411,16 @@ public:
 			}
 		}
 
-		if (!startscreen)
+		if (!startscreen)	//Spiel laeuft
 		{
+			Playermodel->P_x = x_Raumschiff;
+			links = input().down(Gosu::KB_LEFT) && Playermodel->P_x >= 5;
+			rechts = input().down(Gosu::KB_RIGHT) && Playermodel->P_x <= 485;
+			Playermodel->links = links;
+			Playermodel->rechts = rechts;
+			Playermodel->update();
+			x_Raumschiff = Playermodel->P_x;
+
 			//Zufällig fallendes Target
 			//Dropgeschwindigkeit von Score abhängig 
 			if (y_Target <= 510)
@@ -385,7 +453,7 @@ public:
 				shoot = false;
 				Hit = false;
 			}
-			else if (y_Target >= 410)
+			else if (y_Target >= 390)
 			{
 				if (gOcount == 0) { show1 = false;	gOcount++; reset2 = true; }
 				else if (gOcount == 1) { show2 = false; gOcount++; reset2 = true; }
