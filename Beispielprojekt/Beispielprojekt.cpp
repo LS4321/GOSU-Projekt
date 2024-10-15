@@ -305,27 +305,6 @@ public:
 
 		if (startscreen)	//Startscreen fuer Auswahlen und Presets z.B. Positionen der Tasten
 		{
-			reset.Pos_x = 220;
-			reset.Pos_y = 320;
-			reset.pxl_x = 49;
-			reset.pxl_y = 20;
-			reset.xM = x_Mouse;
-			reset.yM = y_Mouse;
-
-			Screbrd.Pos_x = 216;
-			Screbrd.Pos_y = 350;
-			Screbrd.pxl_x = 58;
-			Screbrd.pxl_y = 20;
-			Screbrd.xM = x_Mouse;
-			Screbrd.yM = y_Mouse;
-
-			schliessen.Pos_x = 490;
-			schliessen.Pos_y = 0;
-			schliessen.pxl_x = 20;
-			schliessen.pxl_y = 20;
-			schliessen.xM = x_Mouse;
-			schliessen.yM = y_Mouse;
-
 			P1.Pos_x = 107;
 			P1.Pos_y = 100;
 			P1.pxl_x = 58;
@@ -413,6 +392,27 @@ public:
 
 		if (!startscreen)	//Spiel laeuft
 		{
+			reset.Pos_x = 220;
+			reset.Pos_y = 320;
+			reset.pxl_x = 49;
+			reset.pxl_y = 20;
+			reset.xM = x_Mouse;
+			reset.yM = y_Mouse;
+
+			Screbrd.Pos_x = 216;
+			Screbrd.Pos_y = 350;
+			Screbrd.pxl_x = 58;
+			Screbrd.pxl_y = 20;
+			Screbrd.xM = x_Mouse;
+			Screbrd.yM = y_Mouse;
+
+			schliessen.Pos_x = 490;
+			schliessen.Pos_y = 0;
+			schliessen.pxl_x = 20;
+			schliessen.pxl_y = 20;
+			schliessen.xM = x_Mouse;
+			schliessen.yM = y_Mouse;
+
 			Playermodel->P_x = x_Raumschiff;
 			links = input().down(Gosu::KB_LEFT) && Playermodel->P_x >= 5;
 			rechts = input().down(Gosu::KB_RIGHT) && Playermodel->P_x <= 485;
