@@ -9,37 +9,34 @@
 
 using namespace std;
 
-void einlesen(vector <uint16_t>r, string s)
+/*void einlesen(vector <uint16_t>r)
 {
-	ifstream f(s);
-	char trs;
-	f >> r.at(0);
-	f >> trs;
-	f >> r.at(1);
-	f >> trs;
-	f >> r.at(2);
-	f >> trs;
-	f >> r.at(3);
-	f >> trs;
-	f >> r.at(4);
-	f >> trs;
-	f >> r.at(5);
+	ifstream f("Scoreboard.txt");
+	string zws;
+	vector <uint16_t> vct;
+	f >> zws;						//zws entspricht Ert in txt
+	for(size_t s=0;s<=5;s++)
+	{
+		char c = zws.at(s);
+		uint16_t x = int(c-'0');
+		vct.push_back(x);
+	}
 	f.close();
-}
+	for (size_t s = 0; s <= 5; s++)
+	{
+		r.at(s) = vct.at(s);
+	}
+	if (r.at(1) == 0 && r.at(0) == 0 && r.at(2) == 1 && r.at(3) == 0 && r.at(4) == 0 && r.at(5) == 0) { cout << "passt"; }
+}*/
 
-void ausgeben(vector <uint16_t>l, string s)
+void ausgeben(vector <uint16_t> l)
 {
-	ofstream f(s);
+	ofstream f("Scoreboard.txt");
 	f << l.at(0);
-	f << " ";
 	f << l.at(1);
-	f << " ";
 	f << l.at(2);
-	f << " ";
 	f << l.at(3);
-	f << " ";
 	f << l.at(4);
-	f << " ";
 	f << l.at(5);
 	f.close();
 }
@@ -50,14 +47,12 @@ class Button
 
 public:
 	Gosu::Image button_image;
-	int16_t Pos_x;
-	int16_t Pos_y;
-	int16_t pxl_x;
-	int16_t pxl_y;
-	double xM;
-	double yM;
-
-	Button(){}
+	int16_t Pos_x=0;
+	int16_t Pos_y=0;
+	int16_t pxl_x=0;
+	int16_t pxl_y=0;
+	double xM=0;
+	double yM=0;
 
 	bool bttn_clicked()
 	{
@@ -124,9 +119,7 @@ class GameWindow : public Gosu::Window
 	Gosu::Image p4_button;
 	Gosu::Image p5_button;
 	Gosu::Image p6_button;
-
-	vector <uint16_t> scoreboard{ 0,0,0,0,0,0 };  //ueber eine Datei mit lesen und schreiben ueber Vector
-
+	vector <uint16_t> scoreboard{ 0,0,0,0,0,0 };  //ueber eine Datei lesen und schreiben ueber Vector
 	Button P1;
 	Button P2;
 	Button P3;
@@ -166,6 +159,9 @@ public:
 	bool player6 = false;
 	bool links;
 	bool rechts;
+	bool values_set=false;
+	bool values_set2 = false;
+	bool eingelesen = false;
 	Spielfigur* Playermodel;
 
 
@@ -219,7 +215,6 @@ public:
 			p4_button.draw(107, 250, 2);
 			p5_button.draw(107, 300, 2);
 			p6_button.draw(107, 350, 2);
-			einlesen(scoreboard, "Scoreboard.txt");
 		}
 		if (!startscreen)
 		{
@@ -246,6 +241,26 @@ public:
 			{
 				show3 = true; show2 = true; show1 = true; gOcount = 0;
 
+				if (!eingelesen)
+				{
+					ifstream f("Scoreboard.txt");
+					string zws;
+					vector <uint16_t> vct;
+					f >> zws;						//zws entspricht Ert in txt
+					for (size_t s = 0; s <= 5; s++)
+					{
+						char c = zws.at(s);
+						uint16_t x = int(c - '0');
+						vct.push_back(x);
+					}
+					f.close();
+					for (size_t s = 0; s <= 5; s++)
+					{
+						scoreboard.at(s) = vct.at(s);
+					}
+					eingelesen = true;
+				}
+
 				//Highscore Aufzeichnung
 				ifstream a("highscore.txt");
 				int32_t highscore;
@@ -263,12 +278,10 @@ public:
 				c.close();
 
 				//Spielerspezifischer Highscore 
-
-				//einlesen(scoreboard, "Scoreboard.txt");
 				if (Score > scoreboard.at(Spielerauswahl))
 				{
 					scoreboard.at(Spielerauswahl) = Score;
-					ausgeben(scoreboard, "Scoreboard.txt");
+					ausgeben(scoreboard);
 				}
 				//Array in eine Datei streamen...........................................................
 
@@ -278,19 +291,20 @@ public:
 				font.draw_text("System Highscore:" + highscoreGlobalText, 200, 290, 0, 1.0, 1.0, Gosu::Color::GRAY);
 				Restart.draw(220, 320);
 				ScoreboardButton.draw(216, 350);
+				
+				if (scb)
+				{
+					Scoreboard.draw(0, 0);
+					Close.draw(490, 0);
+					font.draw_text("Scoreboard", 130, 30, 2, 3, 3, Gosu::Color::GRAY);
+					font.draw_text("Player 1: " + to_string(scoreboard.at(0)), 10, 100, 2, 1, 1, Gosu::Color::GRAY);
+					font.draw_text("Player 2: " + to_string(scoreboard.at(1)), 10, 120, 2, 1, 1, Gosu::Color::GRAY);
+					font.draw_text("Player 3: " + to_string(scoreboard.at(2)), 10, 140, 2, 1, 1, Gosu::Color::GRAY);
+					font.draw_text("Player 4: " + to_string(scoreboard.at(3)), 10, 160, 2, 1, 1, Gosu::Color::GRAY);
+					font.draw_text("Player 5: " + to_string(scoreboard.at(4)), 10, 180, 2, 1, 1, Gosu::Color::GRAY);
+					font.draw_text("Player 6: " + to_string(scoreboard.at(5)), 10, 200, 2, 1, 1, Gosu::Color::GRAY);
+				}
 
-			}
-			if (scb)
-			{
-				Scoreboard.draw(0, 0);
-				Close.draw(490, 0);
-				font.draw_text("Scoreboard", 130, 30, 2, 3, 3, Gosu::Color::GRAY);
-				font.draw_text("Player 1:", 10, 100, 2, 1, 1, Gosu::Color::GRAY);
-				font.draw_text("Player 2:", 10, 120, 2, 1, 1, Gosu::Color::GRAY);
-				font.draw_text("Player 3:", 10, 140, 2, 1, 1, Gosu::Color::GRAY);
-				font.draw_text("Player 4:", 10, 160, 2, 1, 1, Gosu::Color::GRAY);
-				font.draw_text("Player 5:", 10, 180, 2, 1, 1, Gosu::Color::GRAY);
-				font.draw_text("Player 6:", 10, 200, 2, 1, 1, Gosu::Color::GRAY);
 			}
 		}
 	}
@@ -305,47 +319,53 @@ public:
 
 		if (startscreen)	//Startscreen fuer Auswahlen und Presets z.B. Positionen der Tasten
 		{
-			P1.Pos_x = 107;
-			P1.Pos_y = 100;
-			P1.pxl_x = 58;
-			P1.pxl_y = 20;
+			if (!values_set2) {
+				P1.Pos_x = 107;
+				P1.Pos_y = 100;
+				P1.pxl_x = 58;
+				P1.pxl_y = 20;
+
+				P2.Pos_x = 107;
+				P2.Pos_y = 150;
+				P2.pxl_x = 58;
+				P2.pxl_y = 20;
+
+				P3.Pos_x = 107;
+				P3.Pos_y = 200;
+				P3.pxl_x = 58;
+				P3.pxl_y = 20;
+
+				P4.Pos_x = 107;
+				P4.Pos_y = 250;
+				P4.pxl_x = 58;
+				P4.pxl_y = 20;
+
+				P5.Pos_x = 107;
+				P5.Pos_y = 300;
+				P5.pxl_x = 58;
+				P5.pxl_y = 20;
+
+				P6.Pos_x = 107;
+				P6.Pos_y = 350;
+				P6.pxl_x = 58;
+				P6.pxl_y = 20;
+
+				values_set2 = true;
+			}
+
 			P1.xM = x_Mouse;
 			P1.yM = y_Mouse;
-
-			P2.Pos_x = 107;
-			P2.Pos_y = 150;
-			P2.pxl_x = 58;
-			P2.pxl_y = 20;
 			P2.xM = x_Mouse;
 			P2.yM = y_Mouse;
-
-			P3.Pos_x = 107;
-			P3.Pos_y = 200;
-			P3.pxl_x = 58;
-			P3.pxl_y = 20;
 			P3.xM = x_Mouse;
 			P3.yM = y_Mouse;
-
-			P4.Pos_x = 107;
-			P4.Pos_y = 250;
-			P4.pxl_x = 58;
-			P4.pxl_y = 20;
 			P4.xM = x_Mouse;
 			P4.yM = y_Mouse;
-
-			P5.Pos_x = 107;
-			P5.Pos_y = 300;
-			P5.pxl_x = 58;
-			P5.pxl_y = 20;
 			P5.xM = x_Mouse;
 			P5.yM = y_Mouse;
-
-			P6.Pos_x = 107;
-			P6.Pos_y = 350;
-			P6.pxl_x = 58;
-			P6.pxl_y = 20;
 			P6.xM = x_Mouse;
 			P6.yM = y_Mouse;
+
 
 			//Spielfigur erstellen
 			Spielfigur s1(Rakete, y_Raumschiff);
@@ -392,26 +412,31 @@ public:
 
 		if (!startscreen)	//Spiel laeuft
 		{
-			reset.Pos_x = 220;
-			reset.Pos_y = 320;
-			reset.pxl_x = 49;
-			reset.pxl_y = 20;
-			reset.xM = x_Mouse;
-			reset.yM = y_Mouse;
+			if (!values_set)
+			{
+				reset.Pos_x = 220;
+				reset.Pos_y = 320;
+				reset.pxl_x = 49;
+				reset.pxl_y = 20;
 
-			Screbrd.Pos_x = 216;
-			Screbrd.Pos_y = 350;
-			Screbrd.pxl_x = 58;
-			Screbrd.pxl_y = 20;
+				Screbrd.Pos_x = 216;
+				Screbrd.Pos_y = 350;
+				Screbrd.pxl_x = 58;
+				Screbrd.pxl_y = 20;
+
+				schliessen.Pos_x = 490;
+				schliessen.Pos_y = 0;
+				schliessen.pxl_x = 20;
+				schliessen.pxl_y = 20;
+				values_set = true;
+			}
+
 			Screbrd.xM = x_Mouse;
 			Screbrd.yM = y_Mouse;
-
-			schliessen.Pos_x = 490;
-			schliessen.Pos_y = 0;
-			schliessen.pxl_x = 20;
-			schliessen.pxl_y = 20;
 			schliessen.xM = x_Mouse;
 			schliessen.yM = y_Mouse;
+			reset.xM = x_Mouse;
+			reset.yM = y_Mouse;
 
 			Playermodel->P_x = x_Raumschiff;
 			links = input().down(Gosu::KB_LEFT) && Playermodel->P_x >= 5;
@@ -431,11 +456,11 @@ public:
 				}
 				if (Score >= 8 && Score < 15)
 				{
-					y_Target = y_Target + 2.5;
+					y_Target = y_Target + 2.0;
 				}
 				if (Score >= 15)
 				{
-					y_Target = y_Target + 3.5;
+					y_Target = y_Target + 3.0;
 				}
 
 				//Hitbox (Target hat 16x16 Pixel)
@@ -477,6 +502,7 @@ public:
 			if (reset.bttn_clicked() && gameOver)
 			{
 				gameOver = false;
+				eingelesen = false;
 				Score = 0;
 				y_Target = -10;
 			}
@@ -513,8 +539,6 @@ int main()
 
 /*
 To-Do
-	1) Screen bei oeffnen des Spiels zum auswaehlen von einem der 6 "Player"  -> Auswahl speichern (erledigt)
-	2) Fuer jeden Spieler extra .txt und in die jeweilige je nach vorheiger Wahl den Highscore speichern (System Highscore bleibt zusaetzlich erhalten)
-	3) Scores aus allen .txts auslesen und bei Aufruf in Scoreboard anzeigen
-	4) evtl. Audiofeedback bei Treffer
+	1) Schreiben und auslesen von Scores in Highscore.txt
+	2) evtl. Audiofeedback bei Treffer
 */
