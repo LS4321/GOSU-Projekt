@@ -9,34 +9,19 @@
 
 using namespace std;
 
-/*void einlesen(vector <uint16_t>r)
-{
-	ifstream f("Scoreboard.txt");
-	string zws;
-	vector <uint16_t> vct;
-	f >> zws;						//zws entspricht Ert in txt
-	for(size_t s=0;s<=5;s++)
-	{
-		char c = zws.at(s);
-		uint16_t x = int(c-'0');
-		vct.push_back(x);
-	}
-	f.close();
-	for (size_t s = 0; s <= 5; s++)
-	{
-		r.at(s) = vct.at(s);
-	}
-	if (r.at(1) == 0 && r.at(0) == 0 && r.at(2) == 1 && r.at(3) == 0 && r.at(4) == 0 && r.at(5) == 0) { cout << "passt"; }
-}*/
-
 void ausgeben(vector <uint16_t> l)
 {
 	ofstream f("Scoreboard.txt");
 	f << l.at(0);
+	f << "\n";
 	f << l.at(1);
+	f << "\n";
 	f << l.at(2);
+	f << "\n";
 	f << l.at(3);
+	f << "\n";
 	f << l.at(4);
+	f << "\n";
 	f << l.at(5);
 	f.close();
 }
@@ -244,21 +229,34 @@ public:
 				if (!eingelesen)
 				{
 					ifstream f("Scoreboard.txt");
-					string zws;
-					vector <uint16_t> vct;
-					f >> zws;						//zws entspricht Ert in txt
-					for (size_t s = 0; s <= 5; s++)
-					{
-						char c = zws.at(s);
-						uint16_t x = int(c - '0');
-						vct.push_back(x);
-					}
+					char trs;
+					uint16_t zws=0;
+					f >> zws;
+					if (zws == 0) { scoreboard.at(0) = 0; }
+					else { scoreboard.at(0) = zws; }
+					//f >> trs;
+					f >> zws;
+					if (zws == 0) { scoreboard.at(1) = 0; }
+					else { scoreboard.at(1) = zws; }
+					//f >> trs;
+					f >> zws;
+					if (zws == 0) { scoreboard.at(2) = 0; }
+					else { scoreboard.at(2) = zws; }
+					//f >> trs;
+					f >> zws;
+					if (zws == 0) { scoreboard.at(3) = 0; }
+					else { scoreboard.at(3) = zws; }
+					//f >> trs;
+					f >> zws;
+					if (zws == 0) { scoreboard.at(4) = 0; }
+					else { scoreboard.at(4) = zws; }
+					//f >> trs;
+					f >> zws;
+					if (zws == 0) { scoreboard.at(5) = 0; }
+					else { scoreboard.at(5) = zws; }
 					f.close();
-					for (size_t s = 0; s <= 5; s++)
-					{
-						scoreboard.at(s) = vct.at(s);
-					}
 					eingelesen = true;
+
 				}
 
 				//Highscore Aufzeichnung
