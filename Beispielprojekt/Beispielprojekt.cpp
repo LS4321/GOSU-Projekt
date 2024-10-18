@@ -9,6 +9,7 @@
 
 using namespace std;
 
+//Funktion liest Scoreboard mittels ofstream ein und speichert es in  einen vector von vorzeichenlosen Ganzzahlen
 void ausgeben(vector <uint16_t> l)
 {
 	ofstream f("Scoreboard.txt");
@@ -104,7 +105,10 @@ class GameWindow : public Gosu::Window
 	Gosu::Image p4_button;
 	Gosu::Image p5_button;
 	Gosu::Image p6_button;
-	vector <uint16_t> scoreboard{ 0,0,0,0,0,0 };  //ueber eine Datei lesen und schreiben ueber Vector
+
+	//Vektor als Zwischenspeicher fuer einlesen und schreiben v. Socreboard
+	vector <uint16_t> scoreboard{ 0,0,0,0,0,0 };  
+
 	Button P1;
 	Button P2;
 	Button P3;
@@ -124,6 +128,7 @@ public:
 	double y_Mouse;
 	double x_Laser;
 	double x_Raumschiff = 255;		//x_pos Raumschiff mit Startwert
+	//Konstante Hoehe der Spielfigur
 	const double y_Raumschiff = 400;
 
 	//Bools v.a. fuer Anzeigen und Schuss
@@ -188,12 +193,12 @@ public:
 	void draw() override
 	{
 		//Font erstellen fuer alle Verwendungen von Schrift
-		Gosu::Font font(19);
+		Gosu::Font font(19,"Impact");
 
 		if (startscreen)
 		{
 			background.draw(0, 0);
-			font.draw_text("Spielstand waehlen", 105, 30, 2, 2.0, 2.0, Gosu::Color::GRAY);
+			font.draw_text("Startmenue - Spielstand waehlen", 35, 30, 2, 2.0, 2.0, Gosu::Color::GRAY);
 			p1_button.draw(107, 100, 2);
 			p2_button.draw(107, 150, 2);
 			p3_button.draw(107, 200, 2);
@@ -219,7 +224,7 @@ public:
 
 			//Score-Anzeige
 			numberText = to_string(Score);
-			Gosu::Font font(19);
+			Gosu::Font font(19,"Impact");
 			font.draw_text("Score: " + numberText, 0, 0, 0, 1.0, 1.0, Gosu::Color::GRAY);
 
 			if (gameOver)
@@ -534,9 +539,3 @@ int main()
 	GameWindow window;
 	window.show();
 }
-
-/*
-To-Do
-	1) Schreiben und auslesen von Scores in Highscore.txt
-	2) evtl. Audiofeedback bei Treffer
-*/
