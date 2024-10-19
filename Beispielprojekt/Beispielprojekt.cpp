@@ -105,6 +105,7 @@ class GameWindow : public Gosu::Window
 	Gosu::Image p4_button;
 	Gosu::Image p5_button;
 	Gosu::Image p6_button;
+	Gosu::Image Fullscreen;
 
 	//Vektor als Zwischenspeicher fuer einlesen und schreiben v. Socreboard
 	vector <uint16_t> scoreboard{ 0,0,0,0,0,0 };  
@@ -118,6 +119,7 @@ class GameWindow : public Gosu::Window
 	Button reset;
 	Button Screbrd;
 	Button schliessen;
+	Button Fullscreen_button;
 
 public:
 	//Doubles fuer Positionen
@@ -159,12 +161,13 @@ public:
 	uint16_t Score = 0;
 	uint16_t gOcount = 0;
 	uint16_t Spielerauswahl = 0;
+	uint16_t Screenflag = 0;
 
 	string numberText;
 	string highscoreGlobalText;
 
 	GameWindow()
-		: Window(510, 510)
+		: Window(510, 510, Screenflag)
 		, background("background.png")
 		, Rakete("model.png")
 		, laserbeam("laserbeam.png")
@@ -182,6 +185,7 @@ public:
 		, p4_button("P4_Button.png")
 		, p5_button("P5_Button.png")
 		, p6_button("P6_Button.png")
+		, Fullscreen("Fullscreen.png")
 	{
 		set_caption("Space Invader");
 	}
@@ -194,6 +198,11 @@ public:
 	{
 		//Font erstellen fuer alle Verwendungen von Schrift
 		Gosu::Font font(19,"Impact");
+		
+		if (startscreen || gameOver) 
+		{ 
+			Fullscreen.draw(463, 481, 3); 
+		}
 
 		if (startscreen)
 		{
@@ -239,23 +248,18 @@ public:
 					f >> zws;
 					if (zws == 0) { scoreboard.at(0) = 0; }
 					else { scoreboard.at(0) = zws; }
-					//f >> trs;
 					f >> zws;
 					if (zws == 0) { scoreboard.at(1) = 0; }
 					else { scoreboard.at(1) = zws; }
-					//f >> trs;
 					f >> zws;
 					if (zws == 0) { scoreboard.at(2) = 0; }
 					else { scoreboard.at(2) = zws; }
-					//f >> trs;
 					f >> zws;
 					if (zws == 0) { scoreboard.at(3) = 0; }
 					else { scoreboard.at(3) = zws; }
-					//f >> trs;
 					f >> zws;
 					if (zws == 0) { scoreboard.at(4) = 0; }
 					else { scoreboard.at(4) = zws; }
-					//f >> trs;
 					f >> zws;
 					if (zws == 0) { scoreboard.at(5) = 0; }
 					else { scoreboard.at(5) = zws; }
@@ -353,6 +357,11 @@ public:
 				P6.pxl_x = 58;
 				P6.pxl_y = 20;
 
+				Fullscreen_button.Pos_x = 463;
+				Fullscreen_button.Pos_y = 481;
+				Fullscreen_button.pxl_x = 58;
+				Fullscreen_button.pxl_y = 47;
+
 				values_set2 = true;
 			}
 
@@ -368,11 +377,27 @@ public:
 			P5.yM = y_Mouse;
 			P6.xM = x_Mouse;
 			P6.yM = y_Mouse;
+			Fullscreen_button.xM = x_Mouse;
+			Fullscreen_button.yM = y_Mouse;
 
 
 			//Spielfigur erstellen
 			Spielfigur s1(Rakete, y_Raumschiff);
 			Playermodel = &s1;
+
+			if(Fullscreen_button.bttn_clicked())
+			{
+				if(Screenflag==0)
+				{
+					Screenflag = 1;
+					resize(510, 510, Screenflag);
+				}
+				else if(Screenflag==1)
+				{
+					Screenflag = 0;
+					resize(510, 510, Screenflag);
+				}
+			}
 
 			//Spielstand waehlen
 			if (P1.bttn_clicked())
@@ -431,6 +456,11 @@ public:
 				schliessen.Pos_y = 0;
 				schliessen.pxl_x = 20;
 				schliessen.pxl_y = 20;
+
+				Fullscreen_button.Pos_x = 463;
+				Fullscreen_button.Pos_y = 481;
+				Fullscreen_button.pxl_x = 58;
+				Fullscreen_button.pxl_y = 47;
 				values_set = true;
 			}
 
@@ -440,6 +470,8 @@ public:
 			schliessen.yM = y_Mouse;
 			reset.xM = x_Mouse;
 			reset.yM = y_Mouse;
+			Fullscreen_button.xM = x_Mouse;
+			Fullscreen_button.yM = y_Mouse;
 
 			Playermodel->P_x = x_Raumschiff;
 			links = input().down(Gosu::KB_LEFT) && Playermodel->P_x >= 5;
@@ -448,6 +480,23 @@ public:
 			Playermodel->rechts = rechts;
 			Playermodel->update();
 			x_Raumschiff = Playermodel->P_x;
+
+			if(gameOver)
+			{
+				if (Fullscreen_button.bttn_clicked())
+				{
+					if (Screenflag == 0)
+					{
+						Screenflag = 1;
+						resize(510, 510, Screenflag);
+					}
+					else if (Screenflag == 1)
+					{
+						Screenflag = 0;
+						resize(510, 510, Screenflag);
+					}
+				}
+			}
 
 			//Zufällig fallendes Target
 			//Dropgeschwindigkeit von Score abhängig 
