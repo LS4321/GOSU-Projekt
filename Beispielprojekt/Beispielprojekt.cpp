@@ -217,7 +217,7 @@ public:
 		}
 		if (!startscreen)
 		{
-			if (!shoot) { x_Laser = x_Raumschiff + 9; }
+			if (!shoot) { x_Laser = x_Raumschiff + 11; }
 			background.draw(0, 0);
 			laserbeam.draw(x_Laser, y_Laser);
 			Rakete.draw(x_Raumschiff, y_Raumschiff);
